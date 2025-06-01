@@ -1,0 +1,157 @@
+import javax.swing.*;
+import java.awt.*;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class BadmintonBookingApp extends JFrame {
+
+  
+    private JTextField nameField;
+    private JSpinner ageSpinner; 
+    private JComboBox<String> courtComboBox;
+    private JComboBox<String> timeSlotComboBox; 
+    private JSpinner playersSpinner; 
+    private JLabel priceLabel; 
+
+    private final double HOURLY_RATE = 300.00; 
+
+    public BadmintonBookingApp() {
+        
+        setTitle("Badminton Court Booking - " + LocalDate.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")));
+        setSize(450, 400); 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); 
+
+        
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); 
+        gbc.fill = GridBagConstraints.HORIZONTAL; 
+
+        
+
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(new JLabel("Client Name:"), gbc);
+        gbc.gridx = 1;
+        nameField = new JTextField(20);
+        mainPanel.add(nameField, gbc);
+
+      
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        mainPanel.add(new JLabel("Age:"), gbc);
+        gbc.gridx = 1;
+        ageSpinner = new JSpinner(new SpinnerNumberModel(18, 10, 99, 1)); 
+        mainPanel.add(ageSpinner, gbc);
+
+        
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        mainPanel.add(new JLabel("Select Court:"), gbc);
+        gbc.gridx = 1;
+        String[] courts = {"Court 1", "Court 2", "Court 3", "Court 4"};
+        courtComboBox = new JComboBox<>(courts);
+        mainPanel.add(courtComboBox, gbc);
+
+        
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        mainPanel.add(new JLabel("Time Slot:"), gbc);
+        gbc.gridx = 1;
+        String[] timeSlots = {
+            "9:00 AM - 10:00 AM", "10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM",
+            "1:00 PM - 2:00 PM", "2:00 PM - 3:00 PM", "3:00 PM - 4:00 PM",
+            "4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM"
+        };
+        timeSlotComboBox = new JComboBox<>(timeSlots);
+        mainPanel.add(timeSlotComboBox, gbc);
+
+   
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        mainPanel.add(new JLabel("Number of Players:"), gbc);
+        gbc.gridx = 1;
+        playersSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 6, 1)); 
+        mainPanel.add(playersSpinner, gbc);
+
+       
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2; 
+        priceLabel = new JLabel("Estimated Price: ₱" + new DecimalFormat("#,##0.00").format(HOURLY_RATE));
+        priceLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        priceLabel.setHorizontalAlignment(SwingConstants.CENTER); 
+        mainPanel.add(priceLabel, gbc);
+
+    
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2; 
+        gbc.anchor = GridBagConstraints.CENTER; 
+        JButton bookButton = new JButton("Book Court Now");
+        bookButton.setPreferredSize(new Dimension(150, 40)); 
+        mainPanel.add(bookButton, gbc);
+
+        add(mainPanel);
+
+        
+        bookButton.addActionListener(e -> {
+            String name = nameField.getText().trim();
+            int age = (int) ageSpinner.getValue();
+            String court = (String) courtComboBox.getSelectedItem();
+            String timeSlot = (String) timeSlotComboBox.getSelectedItem();
+            int players = (int) playersSpinner.getValue();
+            String bookingDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+
+            
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter your name.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+                return; 
+            }
+            if (age < 10) {
+                 JOptionPane.showMessageDialog(this, "Age must be at least 10 years old.", "Invalid Age", JOptionPane.WARNING_MESSAGE);
+                 return;
+            }
+            if (players < 1) { 
+                JOptionPane.showMessageDialog(this, "Number of players must be at least 1.", "Invalid Players", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+           
+            DecimalFormat df = new DecimalFormat("#,##0.00");
+            String formattedPrice = df.format(HOURLY_RATE);
+
+          
+            String confirmationMessage = String.format(
+                "--- Booking Details ---\n" +
+                "Date: %s\n" +
+                "Client Name: %s\n" +
+                "Age: %d\n" +
+                "Court: %s\n" +
+                "Time Slot: %s\n" +
+                "Number of Players: %d\n" +
+                "Price: ₱%s\n\n" +
+                "Thank you for booking! See you on court!",
+                bookingDate, name, age, court, timeSlot, players, formattedPrice
+            );
+
+            JOptionPane.showMessageDialog(this, confirmationMessage, "Booking Confirmed!", JOptionPane.INFORMATION_MESSAGE);
+
+            
+            nameField.setText("");
+            ageSpinner.setValue(18); 
+            courtComboBox.setSelectedIndex(0); 
+            timeSlotComboBox.setSelectedIndex(0); 
+            playersSpinner.setValue(2); 
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new BadmintonBookingApp().setVisible(true));
+    }
+}
